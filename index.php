@@ -2,14 +2,12 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $router) {
-    $router->addRoute('GET', '/users', 'UsersController@index');
-    $router->addRoute('GET', '/users/{id:\d+}', 'UsersController@ID');
+$dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $router) {
 
-    $router->addRoute('GET', '/posts', 'PostsController@index');
-    $router->addRoute('GET', '/posts/{id}', 'PostsController@ID');
+    $router->addRoute('GET', '/country', 'CountriesController@index');
+
+    $router->addRoute('GET', '/town', 'CapitalsController@index');
 });
-
 
 // Fetch method and URI from somewhere
 $httpMethod = $_SERVER['REQUEST_METHOD'];
@@ -22,23 +20,23 @@ if (false !== $pos = strpos($uri, '?')) {
 $uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
-        // ... 404 Not Found
+// ... 404 Not Found
         break;
     case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $allowedMethods = $routeInfo[1];
-        // ... 405 Method Not Allowed
+// ... 405 Method Not Allowed
         break;
     case FastRoute\Dispatcher::FOUND:
         $handler = $routeInfo[1];
         $params = $routeInfo[2];
-        // ... call $handler with $vars
 
         [$controller, $method] = explode('@', $handler);
 
-        $controller = '\App\Controllers\\' . $controller;
-        echo (new $controller)->{$method}($params);
+        $controllerPath = '\App\Controllers\\' . $controller;
+        echo (new $controllerPath)->{$method}($params);
 
         break;
 }
